@@ -5,63 +5,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
-
-import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 
-import { z } from 'zod'
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
+import { statusSchema } from "../Soporte/Validacion";
 
-const statusSchema = z.object({
-    status: z.string().min(1, "Debes seleccionar un status"),
-    comentario: z.string().min(5, "El comentario debe tener minimo 5 caracteres")
-})
-
-
-type Trabajos = {
-    empresa: string
-    puesto: string
-    sueldo: string
-    telefono: string
-    fechaEntrada: string
-    fechaSalida: string
-    comentario: string
-}
-
-
-type Vacante = {
-    id: number
-    nombre: string
-    apePat: string
-    apeMat: string
-    edad: number
-    celular: string
-    email: string
-    direccion: string
-    ubicacion: string
-    empleo: string
-    rolarTurnos: string
-    trabajoNosotros: string
-    escolaridad: string
-    experiencia: string
-    trabajos: Trabajos[]
-    status: string
-}
-
-
+import type { Vacante } from "../Soporte/Interfaz";
+import {  opciones, headRows, empleosVacantes } from "../Soporte/Arrays"
 
 function Tabla() {
     const [vacante, setVacante] = useState<Vacante[]>([])
     const [selectedUser, setSelectedUser] = useState<Vacante | null>(null);
     const [open, setOpen] = useState(false);
-    const [valor, setValor] = useState("");
     const [puestoSeleccionado, setPuestoSeleccionado] = useState("");
-
-
-    /* ******************************************************************************************** */
-    const opciones = ["En proceso", "Contratado", "Rechazado", "Cartera"];
-    const headRows = ["nombre", "apellido", "edad", "empleo", "status"];
-    const puestos = ["Todos", "auxiliar", "Subgerente", "chofer", "Contador", "supervisor", "Cajero", "Reclutador", "Soporte Técnico", "Almacenista"];
+    
+    const form = useForm({
+        resolver: zodResolver(statusSchema),
+        defaultValues: {
+            status: "",
+            comentario: ""
+        }
+    })
     
     useEffect(() => {
         const dataLocal = localStorage.getItem("datosFormulario")
@@ -70,26 +35,24 @@ function Tabla() {
         }
     }, []);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log("Formulario enviado")
-    }
-
-    const form = useForm({
-        resolver: zodResolver(statusSchema),
-        defaultValues: {
-            status: "",
-            comentario: ""
-        }
-    })
-
     useEffect(() => {
         console.log(selectedUser)
     }, [selectedUser])
 
+    const statusStyles: Record<string, string> = {
+        Rechazado: "bg-red-300 hover:bg-red-200",
+        Cartera: "bg-zinc-300 hover:bg-zinc-200",
+        Contratado: "bg-green-300 hover:bg-green-200",
+        "En proceso": "bg-yellow-300 hover:bg-yellow-200"
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        console.log("Formulario enviado")
+    }
+    
     const onSubmit = (data: any) => {
         if (!selectedUser) return;
-
         // Actualizar array completo
         const actualizados = vacante.map((item) =>
             item.id === selectedUser.id
@@ -106,21 +69,12 @@ function Tabla() {
                 ...selectedUser,
                 status: data.status
             })
-
         }
     }
 
     const datosFiltrados = puestoSeleccionado && puestoSeleccionado !== "Todos" ? vacante.filter((d) => d.empleo === puestoSeleccionado) : vacante
-
-
-    const statusStyles: Record<string, string> = {
-        Rechazado: "bg-red-300 hover:bg-red-200",
-        Cartera: "bg-zinc-300 hover:bg-zinc-200",
-        Contratado: "bg-green-300 hover:bg-green-200",
-        "En proceso": "bg-yellow-300 hover:bg-yellow-200"
-    };
     
-
+    
     return (
         <>
             <div className="m-3">
@@ -130,7 +84,7 @@ function Tabla() {
                     </SelectTrigger>
                     <SelectContent>
                         {
-                            puestos.map((i) => (
+                            empleosVacantes.map((i) => (
                                 <SelectItem className="uppercase" key={i} value={i}> {i}  </SelectItem>
                             ))
                             
@@ -297,17 +251,16 @@ function Tabla() {
                                             <FormMessage />
                                         </FormItem>
                                     )}>
-
+                                    
                                     </FormField>
                                     <Button type="submit" className="w-full mt-5">
                                         <Save className="mr-2 h-4 w-4"></Save> Guardar
                                     </Button>
                                 </form>
                             </Form>
-
                         </>
                     )}
-
+                    
                 </DialogContent>
             </Dialog>
 

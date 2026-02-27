@@ -10,39 +10,12 @@ import TrabajosAnteriores from '../components/Componentes.Formulario/TrabajosAnt
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 
+import type  {Vacante} from "../components/Soporte/Interfaz"
+
 
 function Formulario() {
 
-  type Trabajo = {
-    empresa?: string;
-    puesto?: string;
-    sueldoReferencia?: number;
-    fechaEntrada?: string;
-    fechaSalida?: string;
-    comentarioSalida?: string;
-    telefonoReferencia?: string;
-  };
-
-  type FormData = {
-    id:string;
-    nombre: string;
-    apePat: string;
-    apeMat: string;
-    edad: string;
-    celular: string;
-    email: string;
-    ubicacion: string;
-    escolaridad: string;
-    empleo: string;
-    experiencia: string,
-    rolarTurnos: string;
-    trabajoNosotros: string
-    empresa: string;
-    trabajos: Trabajo[];
-    status:string;
-  };
-  
-  const methods = useForm<FormData>({ mode: "onSubmit" });
+  const methods = useForm<Vacante>({ mode: "onSubmit" });
   const { reset } = methods;
   const {  formState } = methods
   const { isSubmitting } = formState
@@ -50,14 +23,12 @@ function Formulario() {
   /*  */
   const storageTest = localStorage.getItem("datosFormulario")
   const datoslocal =  storageTest ? JSON.parse(storageTest) : [];
-  console.log( datoslocal  );
+  //console.log( datoslocal  );
 
-  /*  */
-
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit: SubmitHandler<Vacante> = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 2000)); // simula backend
 
-    const dataStatus: FormData={
+    const dataStatus: Vacante={
       ...data,
       id:crypto.randomUUID(),
       status:""
@@ -65,13 +36,11 @@ function Formulario() {
 
     const storage = localStorage.getItem("datosFormulario")
 
-    const anteriores: FormData[] = storage ? JSON.parse(storage) : [];
+    const anteriores: Vacante[] = storage ? JSON.parse(storage) : [];
     const actualizados = [...anteriores, dataStatus];
 
     localStorage.setItem("datosFormulario", JSON.stringify(actualizados));
 
-    console.log("*******************************************************")
-    console.log(data);
     
     try {
       Swal.fire({

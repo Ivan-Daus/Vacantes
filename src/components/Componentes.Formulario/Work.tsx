@@ -1,8 +1,9 @@
 import { useFormContext } from 'react-hook-form';
+import { empleosVacantes  } from "../Soporte/Arrays"
 
 function Work() {
     const { register, formState: { errors } } = useFormContext();
-    const empleosVacantes  =  ["Todos","auxiliar","Subgerente","chofer","Contador","supervisor","Cajero","Reclutador","Soporte Técnico","Almacenista"];
+    
     return (
         <>
             <div className='bg-white shadow-lg p-3 rounded rounded-1xl m-5'>
