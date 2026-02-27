@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form';
 
 function Work() {
     const { register, formState: { errors } } = useFormContext();
-
+    const empleosVacantes  =  ["Todos","auxiliar","Subgerente","chofer","Contador","supervisor","Cajero","Reclutador","Soporte Técnico","Almacenista"];
     return (
         <>
             <div className='bg-white shadow-lg p-3 rounded rounded-1xl m-5'>
@@ -22,9 +22,11 @@ function Work() {
                                 
                             })}>
                             <option value="">Selecciona</option>
-                            <option value="izta">auxiliar</option>
-                            <option value="izcal">impresor</option>
-                            <option value="tlac">chofer</option>
+                            {
+                                empleosVacantes.map((em)=>(
+                                    <option value={em}> {em}  </option>
+                                ))
+                            }
                         </select>
                         {errors.empleo && <span  className="errorMessage"> ❌ {  String(errors.empleo.message)}</span>}
                     </div>

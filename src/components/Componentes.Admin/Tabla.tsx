@@ -14,9 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 const statusSchema = z.object({
     status: z.string().min(1, "Debes seleccionar un status"),
-    comentario: z
-        .string()
-        .min(5, "El comentario debe tener minimo 5 caracteres")
+    comentario: z.string().min(5, "El comentario debe tener minimo 5 caracteres")
 })
 
 
@@ -41,11 +39,13 @@ type Vacante = {
     email: string
     direccion: string
     ubicacion: string
+    empleo: string
     rolarTurnos: string
     trabajoNosotros: string
     escolaridad: string
     experiencia: string
     trabajos: Trabajos[]
+    status: string
 }
 
 
@@ -55,16 +55,21 @@ function Tabla() {
     const [selectedUser, setSelectedUser] = useState<Vacante | null>(null);
     const [open, setOpen] = useState(false);
     const [valor, setValor] = useState("");
-    const opciones = ["En proceso", "Contratado", "Rechazado", "Cartera"];
+    const [puestoSeleccionado, setPuestoSeleccionado] = useState("");
 
-    console.log(vacante);
-    console.log(valor);
+
+    /* ******************************************************************************************** */
+    const opciones = ["En proceso", "Contratado", "Rechazado", "Cartera"];
+    const headRows = ["nombre", "apellido", "edad", "empleo", "status"];
+    const puestos = ["Todos", "auxiliar", "Subgerente", "chofer", "Contador", "supervisor", "Cajero", "Reclutador", "Soporte Técnico", "Almacenista"];
+    
     useEffect(() => {
-        const data = localStorage.getItem("datosFormulario")
-        if (data) {
-            setVacante(JSON.parse(data))
+        const dataLocal = localStorage.getItem("datosFormulario")
+        if (dataLocal) {
+            setVacante(JSON.parse(dataLocal))
         }
     }, []);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         console.log("Formulario enviado")
@@ -78,44 +83,97 @@ function Tabla() {
         }
     })
 
+    useEffect(() => {
+        console.log(selectedUser)
+    }, [selectedUser])
+
     const onSubmit = (data: any) => {
-        console.log("Datos del formulario:", data)
+        if (!selectedUser) return;
+
+        // Actualizar array completo
+        const actualizados = vacante.map((item) =>
+            item.id === selectedUser.id
+                ? { ...item, status: data.status }
+                : item
+        );
+
+        //  Actualizar estado del array
+        setVacante(actualizados);
+        localStorage.setItem("datosFormulario", JSON.stringify(actualizados));
+
+        if (selectedUser) {
+            setSelectedUser({
+                ...selectedUser,
+                status: data.status
+            })
+
+        }
     }
+
+    const datosFiltrados = puestoSeleccionado && puestoSeleccionado !== "Todos" ? vacante.filter((d) => d.empleo === puestoSeleccionado) : vacante
+
+
+    const statusStyles: Record<string, string> = {
+        Rechazado: "bg-red-300 hover:bg-red-200",
+        Cartera: "bg-zinc-300 hover:bg-zinc-200",
+        Contratado: "bg-green-300 hover:bg-green-200",
+        "En proceso": "bg-yellow-300 hover:bg-yellow-200"
+    };
+    
 
     return (
         <>
+            <div className="m-3">
+                <Select value={puestoSeleccionado} onValueChange={(value) => setPuestoSeleccionado(value)}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un puesto"></SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                        {
+                            puestos.map((i) => (
+                                <SelectItem className="uppercase" key={i} value={i}> {i}  </SelectItem>
+                            ))
+                            
+                        }
+                    </SelectContent>
+                </Select>
+            </div>
+            
             <div className="p-6 rounded-xl border bg-card shadow-lg">
                 <Table>
                     <TableHeader>
                         <TableRow className="border-b hover:bg-muted/50 transition-colors">
                             {
-                                ["Nombre", "Primer Apellido", "Segundo Apellido", "Edad"].map((item, index) => (
+                                headRows.map((item, index) => (
                                     <TableHead key={index} className="text-xs uppercase text-muted-foreground">  {item}  </TableHead>
                                 ))
                             }
                         </TableRow>
                     </TableHeader>
-
+                    
                     <TableBody>
-                        {vacante.map((item, index) => (
+                        {datosFiltrados.map((item, index) => (
                             <TableRow
                                 key={index}
                                 onClick={() => {
                                     setSelectedUser(item)
                                     setOpen(true)
                                 }}
-                                className="cursor-pointer hover:bg-muted/50 transition-colors active:scale-[0.99]">
-
+                                className={`cursor-pointer hover:bg-muted/50 transition-colors active:scale-[0.99]  
+                                ${  statusStyles[item.status] || "hover:bg-muted/50" }
+                                
+                                ` }>
                                 <TableCell>{item.nombre}</TableCell>
                                 <TableCell>{item.apePat}</TableCell>
-                                <TableCell>{item.apeMat}</TableCell>
                                 <TableCell>{item.edad}</TableCell>
+                                <TableCell>{item.empleo}</TableCell>
+                                <TableCell> {item.status}  </TableCell>
                             </TableRow>
+
                         ))}
                     </TableBody>
                 </Table>
             </div>
-
 
             <Dialog open={open} onOpenChange={setOpen}>
 
@@ -151,6 +209,9 @@ function Tabla() {
                                     </div>
                                     <div className="col-span-3 my-3">
                                         <p><strong>Ubicación:</strong> {selectedUser.ubicacion ?? "No registrada"}</p>
+                                    </div>
+                                    <div className="col-span-3 my-3">
+                                        <p><strong>Empleo:</strong> {selectedUser.empleo ?? "No registrada"}</p>
                                     </div>
                                     <div className="col-span-3 my-3">
                                         <p><strong>¿Has trabajado con nosotros?:</strong> {selectedUser.trabajoNosotros ?? "No registrada"}</p>
@@ -196,9 +257,7 @@ function Tabla() {
                                             </div>
                                         ))
                                     ) : (<p className="text-muted-foreground col-span-6">  No tiene experiencia previa.  </p>)
-
                                 }
-
                             </div>
 
                             <Form {...form}>
@@ -240,35 +299,11 @@ function Tabla() {
                                     )}>
 
                                     </FormField>
-                                    <Button type="submit" className="w-full">
+                                    <Button type="submit" className="w-full mt-5">
                                         <Save className="mr-2 h-4 w-4"></Save> Guardar
                                     </Button>
                                 </form>
                             </Form>
-                                    
-                            {/* <div className="rounded p-5  shadow-lg">
-                                        <p className="font-bold uppercase">Status</p>
-                                        <div>
-                                            <Select onValueChange={setValor} value={valor}>
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Selecciona una opción">Selecciona una opción</SelectValue>
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {
-                                                        opciones.map((opcion) => (
-                                                            <SelectItem key={opcion} value={opcion}> {opcion}  </SelectItem>
-                                                        ))
-                                                    }
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="my-3">
-                                            <Textarea></Textarea>
-                                        </div>
-                                        <div>
-                                            <Button className="w-full" type="submit" variant="default" size="lg">  <Save className="mr-2 h-4 w-4"></Save>  Guardar</Button>
-                                        </div>
-                                    </div> */}
 
                         </>
                     )}

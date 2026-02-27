@@ -24,6 +24,7 @@ function Formulario() {
   };
 
   type FormData = {
+    id:string;
     nombre: string;
     apePat: string;
     apeMat: string;
@@ -33,29 +34,45 @@ function Formulario() {
     ubicacion: string;
     escolaridad: string;
     empleo: string;
-    rolarTurnos: string;
-    empresa: string;
     experiencia: string,
+    rolarTurnos: string;
     trabajoNosotros: string
+    empresa: string;
     trabajos: Trabajo[];
+    status:string;
   };
-
+  
   const methods = useForm<FormData>({ mode: "onSubmit" });
   const { reset } = methods;
   const {  formState } = methods
   const { isSubmitting } = formState
 
+  /*  */
+  const storageTest = localStorage.getItem("datosFormulario")
+  const datoslocal =  storageTest ? JSON.parse(storageTest) : [];
+  console.log( datoslocal  );
+
+  /*  */
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 2000)); // simula backend
+
+    const dataStatus: FormData={
+      ...data,
+      id:crypto.randomUUID(),
+      status:""
+    }
 
     const storage = localStorage.getItem("datosFormulario")
 
     const anteriores: FormData[] = storage ? JSON.parse(storage) : [];
-    const actualizados = [...anteriores, data]
+    const actualizados = [...anteriores, dataStatus];
 
     localStorage.setItem("datosFormulario", JSON.stringify(actualizados));
 
+    console.log("*******************************************************")
     console.log(data);
+    
     try {
       Swal.fire({
         icon: "success",
