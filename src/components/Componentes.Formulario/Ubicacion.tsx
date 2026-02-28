@@ -24,7 +24,7 @@ function Ubicacion() {
     return (
         <>
             <div className='grid grid-cols-12 gap-4 bg-white shadow-lg p-3 rounded-1xl m-5'>
-
+                
                 {/* UBICACIÓN */}
                 <div className='sm:col-span-12 col-span-6 flex flex-col'>
                     <p className='font-bold text-lg mb-1'>Ubicación</p>

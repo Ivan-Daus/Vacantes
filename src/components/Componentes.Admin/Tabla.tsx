@@ -40,10 +40,10 @@ function Tabla() {
     }, [selectedUser])
 
     const statusStyles: Record<string, string> = {
-        Rechazado: "bg-red-300 hover:bg-red-200",
-        Cartera: "bg-zinc-300 hover:bg-zinc-200",
-        Contratado: "bg-green-300 hover:bg-green-200",
-        "En proceso": "bg-yellow-300 hover:bg-yellow-200"
+        Rechazado: "bg-red-300 text-red-700",
+        Cartera: "bg-zinc-300 text-zinc-700",
+        Contratado: "bg-green-300 text-green-700",
+        Proceso: "bg-yellow-300 text-yellow-900",
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -93,13 +93,13 @@ function Tabla() {
                 </Select>
             </div>
             
-            <div className="p-6 rounded-xl border bg-card shadow-lg">
+            <div className="p-6 rounded-2xl border bg-background/60 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <Table>
-                    <TableHeader>
-                        <TableRow className="border-b hover:bg-muted/50 transition-colors">
+                    <TableHeader className="bg-muted/30">
+                        <TableRow>
                             {
                                 headRows.map((item, index) => (
-                                    <TableHead key={index} className="text-xs uppercase text-muted-foreground">  {item}  </TableHead>
+                                    <TableHead key={index} className="text-xs uppercase ">  {item}  </TableHead>
                                 ))
                             }
                         </TableRow>
@@ -113,17 +113,22 @@ function Tabla() {
                                     setSelectedUser(item)
                                     setOpen(true)
                                 }}
-                                className={`cursor-pointer hover:bg-muted/50 transition-colors active:scale-[0.99]  
-                                ${  statusStyles[item.status] || "hover:bg-muted/50" }
-                                
+                                className={`h-14 border-separate  border-spacing-y-2 cursor-pointer transition-colors hover:bg-muted/90
+                                ${index %2 ===0 ? "bg-muted/20":""}
                                 ` }>
-                                <TableCell>{item.nombre}</TableCell>
-                                <TableCell>{item.apePat}</TableCell>
-                                <TableCell>{item.edad}</TableCell>
-                                <TableCell>{item.empleo}</TableCell>
-                                <TableCell> {item.status}  </TableCell>
+                                <TableCell className="text-muted-foreground">{item.nombre}</TableCell>
+                                <TableCell className="text-muted-foreground">{item.apePat}</TableCell>
+                                <TableCell className="text-muted-foreground">{item.edad}</TableCell>
+                                <TableCell className="text-muted-foreground">{item.empleo}</TableCell>
+                                <TableCell>
+                                    <span className={`
+                                        px-3 py-1 rounded-full text-xs font-semibold
+                                        ${statusStyles[item.status] ?? "bg-gray-200 text-gray-600"}
+                                        `}>
+                                        {item.status}  
+                                    </span>
+                                </TableCell>
                             </TableRow>
-
                         ))}
                     </TableBody>
                 </Table>
@@ -131,7 +136,7 @@ function Tabla() {
 
             <Dialog open={open} onOpenChange={setOpen}>
 
-                <DialogContent className="sm:max-w-5xl bg-zinc-100 border shadow-xl">
+                <DialogContent className="sm:max-w-5xl bg-background border-0 shadow-2xl rounded-3xl p-8">
                     <DialogHeader>
                         <DialogTitle>Información del postulante</DialogTitle>
                         <DialogDescription>
