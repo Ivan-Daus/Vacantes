@@ -12,14 +12,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { statusSchema } from "../Soporte/Validacion";
 
 import type { Vacante } from "../Soporte/Interfaz";
-import {  opciones, headRows, empleosVacantes } from "../Soporte/Arrays"
+import { opciones, headRows, empleosVacantes } from "../Soporte/Arrays"
+
+
+import { datosModal } from "../Soporte/ObjectoModal"
+
 
 function Tabla() {
     const [vacante, setVacante] = useState<Vacante[]>([])
     const [selectedUser, setSelectedUser] = useState<Vacante | null>(null);
     const [open, setOpen] = useState(false);
     const [puestoSeleccionado, setPuestoSeleccionado] = useState("");
-    
+    const [statusSeleccionado, setStatusSeleccionado] = useState("");
+
     const form = useForm({
         resolver: zodResolver(statusSchema),
         defaultValues: {
@@ -27,7 +32,7 @@ function Tabla() {
             comentario: ""
         }
     })
-    
+
     useEffect(() => {
         const dataLocal = localStorage.getItem("datosFormulario")
         if (dataLocal) {
@@ -50,7 +55,7 @@ function Tabla() {
         e.preventDefault()
         console.log("Formulario enviado")
     }
-    
+
     const onSubmit = (data: any) => {
         if (!selectedUser) return;
         // Actualizar array completo
@@ -72,28 +77,47 @@ function Tabla() {
         }
     }
 
-    const datosFiltrados = puestoSeleccionado && puestoSeleccionado !== "Todos" ? vacante.filter((d) => d.empleo === puestoSeleccionado) : vacante
-    
+    const datosFiltrados = vacante
+        .filter(d => !puestoSeleccionado || puestoSeleccionado === "Todos" || d.empleo === puestoSeleccionado)
+        .filter(d => !statusSeleccionado || statusSeleccionado === "Todos" || d.status === statusSeleccionado);
+        
+    console.log(puestoSeleccionado);
+    console.log(statusSeleccionado);
     
     return (
         <>
-            <div className="m-3">
-                <Select value={puestoSeleccionado} onValueChange={(value) => setPuestoSeleccionado(value)}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un puesto"></SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                        {
-                            empleosVacantes.map((i) => (
-                                <SelectItem className="uppercase" key={i} value={i}> {i}  </SelectItem>
-                            ))
-                            
-                        }
-                    </SelectContent>
-                </Select>
+            <div className="mx-10 my-5 grid grid-cols-12">
+                <div className="col-span-3">
+                    <Select value={puestoSeleccionado} onValueChange={(value) => setPuestoSeleccionado(value)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un puesto"></SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {
+                                empleosVacantes.map((i) => (
+                                    <SelectItem className="uppercase" key={i} value={i}> {i}  </SelectItem>
+                                ))
+                            }
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="col-span-3">
+                    <Select value={statusSeleccionado} onValueChange={(value) => setStatusSeleccionado(value)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Seleccina un estatus"></SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {
+                                opciones.map((i) => (
+                                    <SelectItem className="uppercase" key={i} value={i}> {i} </SelectItem>
+                                ))
+                            }
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
-            
-            <div className="p-6 rounded-2xl border bg-background/60 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60">
+
+            <div className="p-6 m-10 rounded-2xl border bg-background/60 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <Table>
                     <TableHeader className="bg-muted/30">
                         <TableRow>
@@ -104,7 +128,7 @@ function Tabla() {
                             }
                         </TableRow>
                     </TableHeader>
-                    
+
                     <TableBody>
                         {datosFiltrados.map((item, index) => (
                             <TableRow
@@ -114,7 +138,7 @@ function Tabla() {
                                     setOpen(true)
                                 }}
                                 className={`h-14 border-separate  border-spacing-y-2 cursor-pointer transition-colors hover:bg-muted/90
-                                ${index %2 ===0 ? "bg-muted/20":""}
+                                ${index % 2 === 0 ? "bg-muted/20" : ""}
                                 ` }>
                                 <TableCell className="text-muted-foreground">{item.nombre}</TableCell>
                                 <TableCell className="text-muted-foreground">{item.apePat}</TableCell>
@@ -125,7 +149,7 @@ function Tabla() {
                                         px-3 py-1 rounded-full text-xs font-semibold
                                         ${statusStyles[item.status] ?? "bg-gray-200 text-gray-600"}
                                         `}>
-                                        {item.status}  
+                                        {item.status}
                                     </span>
                                 </TableCell>
                             </TableRow>
@@ -256,7 +280,7 @@ function Tabla() {
                                             <FormMessage />
                                         </FormItem>
                                     )}>
-                                    
+
                                     </FormField>
                                     <Button type="submit" className="w-full mt-5">
                                         <Save className="mr-2 h-4 w-4"></Save> Guardar
@@ -265,7 +289,7 @@ function Tabla() {
                             </Form>
                         </>
                     )}
-                    
+
                 </DialogContent>
             </Dialog>
 
