@@ -65,7 +65,7 @@ function Formulario() {
         experiencia: "",
         trabajos: []
       })
-
+      
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -179,10 +179,8 @@ function Formulario() {
               </form>
             </FormProvider>
           </fieldset>
-
         </div>
       </div>
-
     </>
   )
 }

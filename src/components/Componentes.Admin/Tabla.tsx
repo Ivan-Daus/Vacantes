@@ -14,10 +14,6 @@ import { statusSchema } from "../Soporte/Validacion";
 import type { Vacante } from "../Soporte/Interfaz";
 import { opciones, headRows, empleosVacantes } from "../Soporte/Arrays"
 
-
-import { datosModal } from "../Soporte/ObjectoModal"
-
-
 function Tabla() {
     const [vacante, setVacante] = useState<Vacante[]>([])
     const [selectedUser, setSelectedUser] = useState<Vacante | null>(null);
@@ -81,9 +77,9 @@ function Tabla() {
         .filter(d => !puestoSeleccionado || puestoSeleccionado === "Todos" || d.empleo === puestoSeleccionado)
         .filter(d => !statusSeleccionado || statusSeleccionado === "Todos" || d.status === statusSeleccionado);
         
-    console.log(puestoSeleccionado);
-    console.log(statusSeleccionado);
-    
+    //console.log(puestoSeleccionado);
+    //console.log(statusSeleccionado);
+
     return (
         <>
             <div className="mx-10 my-5 grid grid-cols-12">
@@ -276,11 +272,11 @@ function Tabla() {
                                                     {...field}
                                                 />
                                             </FormControl>
-
+                                            
                                             <FormMessage />
                                         </FormItem>
                                     )}>
-
+                                    
                                     </FormField>
                                     <Button type="submit" className="w-full mt-5">
                                         <Save className="mr-2 h-4 w-4"></Save> Guardar
