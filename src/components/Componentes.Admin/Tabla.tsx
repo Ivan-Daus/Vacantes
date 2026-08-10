@@ -47,12 +47,10 @@ function Tabla() {
         Proceso: "bg-yellow-300 text-yellow-900",
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        console.log("Formulario enviado")
-    }
+    
 
     const onSubmit = (data: any) => {
+        console.log(data)
         if (!selectedUser) return;
         // Actualizar array completo
         const actualizados = vacante.map((item) =>

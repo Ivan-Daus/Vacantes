@@ -23,7 +23,7 @@ function Formulario() {
   /*  */
   const storageTest = localStorage.getItem("datosFormulario")
   const datoslocal =  storageTest ? JSON.parse(storageTest) : [];
-  //console.log( datoslocal  );
+  console.log( datoslocal  );
 
   const onSubmit: SubmitHandler<Vacante> = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 2000)); // simula backend
