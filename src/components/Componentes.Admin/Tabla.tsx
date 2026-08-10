@@ -47,19 +47,17 @@ function Tabla() {
         Proceso: "bg-yellow-300 text-yellow-900",
     };
 
-    
-
     const onSubmit = (data: any) => {
         console.log(data)
+
         if (!selectedUser) return;
-        // Actualizar array completo
+
         const actualizados = vacante.map((item) =>
             item.id === selectedUser.id
                 ? { ...item, status: data.status }
                 : item
         );
 
-        //  Actualizar estado del array
         setVacante(actualizados);
         localStorage.setItem("datosFormulario", JSON.stringify(actualizados));
 
@@ -69,14 +67,15 @@ function Tabla() {
                 status: data.status
             })
         }
+        form.reset();
+        setOpen(false);
+
     }
 
     const datosFiltrados = vacante
         .filter(d => !puestoSeleccionado || puestoSeleccionado === "Todos" || d.empleo === puestoSeleccionado)
         .filter(d => !statusSeleccionado || statusSeleccionado === "Todos" || d.status === statusSeleccionado);
-        
-    //console.log(puestoSeleccionado);
-    //console.log(statusSeleccionado);
+
 
     return (
         <>
@@ -141,9 +140,8 @@ function Tabla() {
                                 <TableCell>
                                     <span className={`
                                         px-3 py-1 rounded-full text-xs font-semibold
-                                        ${statusStyles[item.status] ?? "bg-gray-200 text-gray-600"}
-                                        `}>
-                                        {item.status}
+                                        ${statusStyles[item.status] ?? "bg-gray-200 text-gray-600"} `}>
+                                        {item.status === "" ? "Sin status" : item.status}
                                     </span>
                                 </TableCell>
                             </TableRow>
@@ -151,142 +149,141 @@ function Tabla() {
                     </TableBody>
                 </Table>
             </div>
-
             <Dialog open={open} onOpenChange={setOpen}>
-
-                <DialogContent className="sm:max-w-5xl bg-background border-0 shadow-2xl rounded-3xl p-8">
-                    <DialogHeader>
+                <DialogContent className="sm:max-w-5xl bg-background border-0 shadow-2xl rounded-2xl overflow-hidden">
+                    <DialogHeader className="p-8 pb-0">
                         <DialogTitle>Información del postulante</DialogTitle>
                         <DialogDescription>
                             Información completa del registro seleccionado.
                         </DialogDescription>
+                        <p>
+                            <span className={`px-3 py-1 rounded-full text-xl font-semibold ${selectedUser?.status && statusStyles[selectedUser.status]
+                                ? statusStyles[selectedUser.status]
+                                : "bg-gray-200 text-gray-600"
+                                }`}>
+                                {selectedUser?.status === "" ? "Sin status" : selectedUser?.status}
+                            </span>
+                        </p>
                     </DialogHeader>
-
-                    {selectedUser && (
-                        <>
-                            <div className=" rounded-3 shadow-lg p-3">
-                                <div className="grid grid-cols-12">
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Nombre:</strong> {selectedUser.nombre}</p>
+                    
+                    <div className="p-8 pt-4 max-h-[75vh] overflow-y-auto">
+                        {selectedUser && (
+                            <>
+                                <div className=" rounded-3 shadow-lg p-3">
+                                    <div className="grid grid-cols-12 gap-2">
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Nombre:</strong> {selectedUser.nombre}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Apellido Paterno:</strong> {selectedUser.apePat}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Apellido Materno:</strong> {selectedUser.apeMat}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Edad:</strong> {selectedUser.edad}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Celular:</strong> {selectedUser.celular}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Email:</strong> {selectedUser.email ?? "No registrado"}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Ubicación:</strong> {selectedUser.ubicacion ?? "No registrada"}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Empleo:</strong> {selectedUser.empleo ?? "No registrada"}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>¿Has trabajado con nosotros?:</strong> {selectedUser.trabajoNosotros ?? "No registrada"}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Rolar turnos:</strong> {selectedUser.rolarTurnos ?? "No registrada"}</p>
+                                        </div>
+                                        <div className="col-span-3 my-3 bg-gray-50 shadow-lg p-1 border border-gray-300 rounded-lg">
+                                            <p><strong>Experiencia:</strong> {selectedUser.experiencia ?? "No registrada"}</p>
+                                        </div>
                                     </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Apellido Paterno:</strong> {selectedUser.apePat}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Apellido Materno:</strong> {selectedUser.apeMat}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Edad:</strong> {selectedUser.edad}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Celular:</strong> {selectedUser.celular}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Email:</strong> {selectedUser.email ?? "No registrado"}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Ubicación:</strong> {selectedUser.ubicacion ?? "No registrada"}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Empleo:</strong> {selectedUser.empleo ?? "No registrada"}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>¿Has trabajado con nosotros?:</strong> {selectedUser.trabajoNosotros ?? "No registrada"}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Rolar turnos:</strong> {selectedUser.rolarTurnos ?? "No registrada"}</p>
-                                    </div>
-                                    <div className="col-span-3 my-3">
-                                        <p><strong>Experiencia:</strong> {selectedUser.experiencia ?? "No registrada"}</p>
-                                    </div>
-
                                 </div>
-                            </div>
-
-                            <p className="font-bold uppercase">Empleos anteriores</p>
-                            <div className="grid grid-cols-12">
-                                {
-                                    selectedUser?.trabajos?.length > 0 ? (
-
-                                        selectedUser?.trabajos?.map((i, index) => (
-                                            <div className="border rounded-2xl shadow-lg p-3 m-3 col-span-4 bg-zinc-50" key={index}>
-                                                <div className="col-span-3 my-3">
-                                                    <p><strong>Empresa: </strong>  {i.empresa || "Sin datos"}  </p>
+                                <p className="font-bold uppercase">Empleos anteriores</p>
+                                <div className="grid grid-cols-12">
+                                    {
+                                        selectedUser?.trabajos?.length > 0 ? (
+                                            selectedUser?.trabajos?.map((i, index) => (
+                                                <div className="border rounded-2xl shadow-lg p-3 m-3 col-span-4 bg-zinc-50" key={index}>
+                                                    <div className="col-span-3 my-3">
+                                                        <p><strong>Empresa: </strong>  {i.empresa || "Sin datos"}  </p>
+                                                    </div>
+                                                    <div className="col-span-3 my-3">
+                                                        <p> <strong>Puesto: </strong> {i.puesto || "Sin datos"}  </p>
+                                                    </div>
+                                                    <div className="col-span-3 my-3">
+                                                        <p> <strong>Sueldo: </strong> {i.sueldo || "Sin datos"}  </p>
+                                                    </div>
+                                                    <div className="col-span-3 my-3">
+                                                        <p><strong>Fecha entrada: </strong>  {i.fechaEntrada || "Sin datos"}  </p>
+                                                    </div>
+                                                    <div className="col-span-3 my-3">
+                                                        <p> <strong>Fecha salida: </strong> {i.fechaSalida || "Sin datos"}  </p>
+                                                    </div>
+                                                    <div className="col-span-3 my-3">
+                                                        <p> <strong>Comentarios: </strong> {i.comentario || "Sin datos"}  </p>
+                                                    </div>
+                                                    <div className="col-span-3 my-3">
+                                                        <p> <strong>Telfono de referencia: </strong> {i.telefono || "Sin datos"}  </p>
+                                                    </div>
                                                 </div>
-                                                <div className="col-span-3 my-3">
-                                                    <p> <strong>Puesto: </strong> {i.puesto || "Sin datos"}  </p>
-                                                </div>
-                                                <div className="col-span-3 my-3">
-                                                    <p> <strong>Sueldo: </strong> {i.sueldo || "Sin datos"}  </p>
-                                                </div>
-                                                <div className="col-span-3 my-3">
-                                                    <p><strong>Fecha entrada: </strong>  {i.fechaEntrada || "Sin datos"}  </p>
-                                                </div>
-                                                <div className="col-span-3 my-3">
-                                                    <p> <strong>Fecha salida: </strong> {i.fechaSalida || "Sin datos"}  </p>
-                                                </div>
-                                                <div className="col-span-3 my-3">
-                                                    <p> <strong>Comentarios: </strong> {i.comentario || "Sin datos"}  </p>
-                                                </div>
-                                                <div className="col-span-3 my-3">
-                                                    <p> <strong>Telfono de referencia: </strong> {i.telefono || "Sin datos"}  </p>
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (<p className="text-muted-foreground col-span-6">  No tiene experiencia previa.  </p>)
-                                }
-                            </div>
-
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)}>
-                                    <FormField control={form.control} name="status" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Status</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                                            ))
+                                        ) : (<p className="text-muted-foreground col-span-6">  No tiene experiencia previa.  </p>)
+                                    }
+                                </div>
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                                        <FormField control={form.control} name="status" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Status</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Selecciona una opción"></SelectValue>
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {
+                                                            opciones.map((opcion) => (
+                                                                <SelectItem key={opcion} value={opcion}> {opcion}  </SelectItem>
+                                                            ))
+                                                        }
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}>
+                                        </FormField>
+                                        <FormField control={form.control} name="comentario" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Comentario</FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Selecciona una opción"></SelectValue>
-                                                    </SelectTrigger>
+                                                    <Textarea
+                                                        placeholder="Escribe un comentario..."
+                                                        {...field}
+                                                    />
                                                 </FormControl>
-                                                <SelectContent>
-                                                    {
-                                                        opciones.map((opcion) => (
-                                                            <SelectItem key={opcion} value={opcion}> {opcion}  </SelectItem>
-                                                        ))
-                                                    }
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}>
-                                    </FormField>
-                                    <FormField control={form.control} name="comentario" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Comentario</FormLabel>
-
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Escribe un comentario..."
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}>
-                                    
-                                    </FormField>
-                                    <Button type="submit" className="w-full mt-5">
-                                        <Save className="mr-2 h-4 w-4"></Save> Guardar
-                                    </Button>
-                                </form>
-                            </Form>
-                        </>
-                    )}
-
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}>
+                                        </FormField>
+                                        <Button type="submit" className="w-full mt-5">
+                                            <Save className="mr-2 h-4 w-4"></Save> Guardar
+                                        </Button>
+                                    </form>
+                                </Form>
+                            </>
+                        )}
+                    </div>
                 </DialogContent>
             </Dialog>
-
         </>
     )
 }
